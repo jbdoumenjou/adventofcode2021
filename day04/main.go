@@ -20,9 +20,30 @@ func resultPart1(path string) int {
 	return 0
 }
 
-// not 15510
+func resultPart2(path string) int {
+	numbers, boards := parse(path)
+	boardIndexToSkip := make(map[int]struct{})
+	for _, number := range numbers {
+		for i, board := range boards {
+			if _, ok := boardIndexToSkip[i]; ok {
+				continue
+			}
+			if board.Mark(number) {
+				boardIndexToSkip[i] = struct{}{}
+				if len(boardIndexToSkip) == len(boards) {
+					return board.SumUnmarked() * number
+				}
+			}
+		}
+	}
+
+	return 0
+}
+
 func main() {
+	// 8136
 	fmt.Printf("Part 1 result: %d\n", resultPart1("day04/input.txt"))
+	fmt.Printf("Part 2 result: %d\n", resultPart2("day04/input.txt"))
 }
 
 type Box struct {

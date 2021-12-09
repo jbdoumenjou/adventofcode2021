@@ -1,25 +1,28 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/magiconair/properties/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPart1(t *testing.T) {
-	assert.Equal(t, resultPart1("test.txt"), 4512)
+	assert.Equal(t, 4512, resultPart1("test.txt"))
+}
+
+func TestPart2(t *testing.T) {
+	assert.Equal(t, 1924, resultPart2("test.txt"))
 }
 
 func TestParseBoardLine(t *testing.T) {
 	line := parseBoardLine("22 13 17 11  0")
-	assert.Equal(t, line, []int{22, 13, 17, 11, 0})
+	assert.Equal(t, []Box{{Nb: 22}, {Nb: 13}, {Nb: 17}, {Nb: 11}, {Nb: 0}}, line)
 }
 
 func TestParse(t *testing.T) {
 	numbers, boards := parse("test.txt")
-	assert.Equal(t, numbers, []int{7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1})
-	assert.Equal(t, boards, []Board{
+	assert.Equal(t, []int{7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1}, numbers)
+	assert.Equal(t, []Board{
 		{
 			[]Box{{Nb: 22}, {Nb: 13}, {Nb: 17}, {Nb: 11}, {Nb: 0}},
 			[]Box{{Nb: 8}, {Nb: 2}, {Nb: 23}, {Nb: 4}, {Nb: 24}},
@@ -41,9 +44,7 @@ func TestParse(t *testing.T) {
 			[]Box{{Nb: 22}, {Nb: 11}, {Nb: 13}, {Nb: 6}, {Nb: 5}},
 			[]Box{{Nb: 2}, {Nb: 0}, {Nb: 12}, {Nb: 3}, {Nb: 7}},
 		},
-	})
-	fmt.Printf("Boards: %v\n", boards)
-	fmt.Printf("Numbers: %v\n", numbers)
+	}, boards)
 }
 
 func TestBoardLine_Mark(t *testing.T) {
@@ -87,9 +88,9 @@ func TestBoardLine_Mark(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			t.Parallel()
 			gotBingo := test.bl.Mark(test.nb)
-			assert.Equal(t, gotBingo, test.expectedBingo)
+			assert.Equal(t, test.expectedBingo, gotBingo)
 			for i, box := range test.bl {
-				assert.Equal(t, box.Marked, test.expectedMarked[i])
+				assert.Equal(t, test.expectedMarked[i], box.Marked)
 			}
 		})
 	}

@@ -9,42 +9,21 @@ import (
 )
 
 func main() {
-	positions := parse("day07/input.txt")
+	positions := New("day07/input.txt")
 
-	fmt.Printf("Part 1 result: %d\n", getcheapestFuelOutcome(positions))
+	fmt.Printf("Part 1 result: %d\n", positions.CheapestFuelCost(Abs))
+	fmt.Printf("Part 2 result: %d\n", positions.CheapestFuelCost(Triangle))
 }
 
-func getcheapestFuelOutcome(positions []int) int {
-	var outcomes []int
-	for _, p := range positions {
-		var cost int
-		for _, position := range positions {
-			if p == position {
-				continue
-			}
-			// abs
-			if position > p {
-				cost += position - p
-				continue
-			}
-			cost += p - position
-		}
-		outcomes = append(outcomes, cost)
-	}
+type Positions []int
 
-	sort.Ints(outcomes)
-
-	return outcomes[0]
-}
-
-// Tools
-func parse(path string) []int {
+func New(path string) Positions {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("cannot read file %v", err)
 	}
 
-	var fishes []int
+	var positions []int
 	lines := strings.Split(string(b), "\n")
 	for _, line := range lines {
 		if line == "" {
@@ -52,11 +31,44 @@ func parse(path string) []int {
 		}
 		numbers := strings.Split(line, ",")
 		for _, nb := range numbers {
-			fishes = append(fishes, toInt(nb))
+			positions = append(positions, toInt(nb))
 		}
 	}
 
-	return fishes
+	return positions
+}
+
+type CostComputer func(distance int) int
+
+func (p Positions) CheapestFuelCost(getCost CostComputer) int {
+	sort.Ints(p)
+	min := p[0]
+	max := p[len(p)-1]
+
+	var costs []int
+	for to := min; to <= max; to++ {
+		var cost int
+		for _, from := range p {
+			cost += getCost(from - to)
+		}
+		costs = append(costs, cost)
+	}
+
+	sort.Ints(costs)
+	return costs[0]
+}
+
+func Abs(n int) int {
+	if n >= 0 {
+		return n
+	}
+
+	return -n
+}
+
+func Triangle(distance int) int {
+	n := Abs(distance)
+	return (n * (n + 1)) / 2
 }
 
 func toInt(s string) int {
